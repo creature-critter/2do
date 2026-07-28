@@ -9,38 +9,72 @@
     return () => clearInterval(id);
   });
 
-  const hours = $derived(String(now.getHours()).padStart(2, '0'));
-  const minutes = $derived(String(now.getMinutes()).padStart(2, '0'));
+  const h = $derived(String(now.getHours()).padStart(2, '0'));
+  const m = $derived(String(now.getMinutes()).padStart(2, '0'));
 </script>
 
-<div class="flip-clock">
-  <div class="card">{hours}</div>
-  <span class="sep">:</span>
-  <div class="card">{minutes}</div>
+<div class="clock-row">
+  <div class="digit-card">
+    <div class="digit-group"><span class="digit">{h[0]}</span></div>
+    <div class="digit-group"><span class="digit">{h[1]}</span></div>
+  </div>
+  <div class="digit-card">
+    <div class="digit-group"><span class="digit">{m[0]}</span></div>
+    <div class="digit-group"><span class="digit">{m[1]}</span></div>
+  </div>
 </div>
 
 <style>
-  .flip-clock {
+  .clock-row {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    font-family: monospace;
-    font-size: 2.2rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
+    gap: var(--spacing-xs);
+    max-width: 345px;
+    margin-inline: auto;
+    flex-shrink: 0;
   }
-  .card {
+
+  .digit-card {
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.1em 0.4em;
-    color: var(--text);
-    min-width: 2ch;
-    text-align: center;
+    border: 1px solid var(--surface);
+    border-radius: var(--radius-sm);
+    padding: 0 var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
   }
-  .sep {
-    color: var(--text-muted);
-    line-height: 1;
-    padding-bottom: 0.1em;
+
+  .digit-group {
+    width: 48px;
+    height: 104px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .digit-group::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    transform: translateY(-50%);
+    background: var(--surface);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .digit {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 200;
+    font-size: 80px;
+    line-height: normal;
+    color: var(--accent);
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
   }
 </style>

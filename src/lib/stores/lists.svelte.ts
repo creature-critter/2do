@@ -62,6 +62,11 @@ export function removeItem(listId: string, itemId: string) {
   persist();
 }
 
+export function renameList(id: string, name: string) {
+  const list = listsState.lists.find(l => l.id === id);
+  if (list) { list.name = name; persist(); }
+}
+
 export function setItemCompleted(listId: string, itemId: string, completed: boolean) {
   const list = listsState.lists.find(l => l.id === listId);
   const item = list?.items.find(i => i.id === itemId);

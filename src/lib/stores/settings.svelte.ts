@@ -2,7 +2,7 @@ import { Store } from '@tauri-apps/plugin-store';
 
 export const settings = $state({
   theme: 'dark' as 'light' | 'dark',
-  accentColor: '#c084fc',
+  accentColor: '#ffc31c',
   audioEnabled: true,
 });
 

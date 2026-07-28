@@ -1,20 +1,32 @@
-/* --- design tokens --- */
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@200;300;400;700&family=Work+Sans:wght@500&display=swap');
+
+/* --- design tokens (Figma exact) --- */
 :root {
-  --accent: #c084fc;
-  --bg: #111110;
-  --surface: #1c1c1b;
-  --text: #f0eeeb;
-  --text-muted: #888;
-  --border: #2e2e2c;
+  --bg: #121212b3;
+  --surface: #313131;
+  --surface-dim: #272727;
+  --border: #3f3f3f;
+  --accent: #ffc31c;
+  --text: #d3d3d3;
+  --text-muted: #9b9b9b;
+  --red: #c42b1c;
   --radius: 12px;
+  --radius-sm: 6px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 }
 
+/* --- light theme --- */
 [data-theme="light"] {
-  --bg: #f5f4f0;
-  --surface: #ffffff;
-  --text: #1a1a18;
-  --text-muted: #777;
-  --border: #e0ddd8;
+  --bg: #fff9eeb2;
+  --surface: #fff9ed;
+  --surface-dim: #f0e2c8;
+  --border: #eadfc7;
+  --text: #635834;
+  --text-muted: #8c8369;
 }
 
 /* --- reset --- */
@@ -25,12 +37,15 @@
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Geist Mono', monospace;
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
-  transition: background 0.2s, color 0.2s;
+  height: 100vh;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
+  user-select: none;
+  backdrop-filter: blur(5.5px);
+  -webkit-backdrop-filter: blur(5.5px);
 }
 
 #app {
@@ -41,5 +56,45 @@ body {
 }
 
 button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* --- tooltips --- */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: 'Work Sans', sans-serif;
+  font-weight: 500;
+  font-size: 12px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+  z-index: 9999;
+  box-shadow: 0 2px 2.5px rgba(0, 0, 0, 0.08);
+}
+
+[data-tooltip]:hover::before {
+  opacity: 1;
+}
+
+[data-tooltip][data-tooltip-dir="bottom"]::before {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+
+input, textarea {
   font-family: inherit;
 }

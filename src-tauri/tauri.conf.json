@@ -15,8 +15,11 @@
         "title": "2do",
         "width": 1100,
         "height": 720,
+        "minWidth": 315,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "decorations": false,
+        "transparent": true
       }
     ],
     "security": {
