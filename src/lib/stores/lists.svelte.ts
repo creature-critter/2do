@@ -1,5 +1,8 @@
 import { Store } from '@tauri-apps/plugin-store';
 
+// Bump this to wipe all stored data on next launch (forces empty state)
+const DATA_VERSION = '0.1.1';
+
 export type ListType = 'daily' | 'efficiency' | 'unlimited';
 
 export interface ListItem {
@@ -25,6 +28,14 @@ function uid() {
 
 export async function loadLists() {
   store = await Store.load('lists.json');
+  const storedVersion = await store.get<string>('dataVersion');
+  if (storedVersion !== DATA_VERSION) {
+    listsState.lists = [];
+    await store.set('lists', []);
+    await store.set('dataVersion', DATA_VERSION);
+    await store.save();
+    return;
+  }
   const saved = await store.get<TodoList[]>('lists');
   if (saved) listsState.lists = saved;
 }
