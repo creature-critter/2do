@@ -125,8 +125,13 @@
 
 <style>
   .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: var(--bg);
     flex-shrink: 0;
-    position: relative;
     display: flex;
     flex-direction: column;
     padding: 0 var(--spacing-xl);

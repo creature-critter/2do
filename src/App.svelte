@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { loadSettings, settings } from './lib/stores/settings.svelte';
   import { loadLists, listsState } from './lib/stores/lists.svelte';
   import TitleBar from './lib/components/TitleBar.svelte';
@@ -7,15 +7,15 @@
   import ListCard from './lib/components/ListCard.svelte';
   import BottomBar from './lib/components/BottomBar.svelte';
 
-  // Measure each zone independently so fitHeight works regardless of shell height
-  let titlebarWrap: HTMLElement | undefined = $state();
-  let bodyEl: HTMLElement | undefined = $state();
   let contentEl: HTMLElement | undefined = $state();
-  let bottombarWrap: HTMLElement | undefined = $state();
 
   let win: any = null;
   let LogicalSize: any = null;
   let maxH = 0;
+
+  // Heights match TitleBar (32px fixed) and BottomBar (80px fixed)
+  const TITLEBAR_H = 32;
+  const BOTTOMBAR_H = 80;
 
   onMount(async () => {
     await Promise.all([loadSettings(), loadLists()]);
@@ -31,62 +31,49 @@
   });
 
   async function fitHeight() {
-    if (!contentEl || !titlebarWrap || !bottombarWrap || !bodyEl || !win || !LogicalSize || !maxH) return;
+    if (!contentEl || !win || !LogicalSize || !maxH) return;
     try {
-      const bs = window.getComputedStyle(bodyEl);
-      const bodyPadV = parseFloat(bs.paddingTop) + parseFloat(bs.paddingBottom);
-      const total = titlebarWrap.offsetHeight + bodyPadV + contentEl.offsetHeight + bottombarWrap.offsetHeight;
-      const h = Math.min(total, maxH);
+      const h = Math.min(TITLEBAR_H + contentEl.offsetHeight + BOTTOMBAR_H, maxH);
       await win.setSize(new LogicalSize(window.innerWidth, h));
     } catch {}
   }
 
+  // Only re-run when list/item counts change — NOT on window resize (no ResizeObserver)
   $effect(() => {
-    if (!contentEl) return;
-    const ro = new ResizeObserver(() => { fitHeight(); });
-    ro.observe(contentEl);
-    return () => ro.disconnect();
+    listsState.lists.length;
+    listsState.lists.forEach(l => l.items.length);
+    untrack(fitHeight);
   });
 </script>
 
 <div class="shell" data-theme={settings.theme} style:--accent={settings.accentColor}>
-  <div class="bar-wrap" bind:this={titlebarWrap}>
-    <TitleBar />
-  </div>
-
-  <div class="body" bind:this={bodyEl}>
+  <TitleBar />
+  <div class="body">
     <div class="content" bind:this={contentEl}>
       <FlipClock />
       <ListCard />
     </div>
   </div>
-
-  <div class="bar-wrap" bind:this={bottombarWrap}>
-    <BottomBar />
-  </div>
+  <BottomBar />
 </div>
 
 <style>
   .shell {
-    height: 100vh;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     background: var(--bg);
     color: var(--text);
   }
 
-  .bar-wrap {
-    flex-shrink: 0;
-  }
-
   .body {
     flex: 1;
-    padding: var(--spacing-xl);
+    /* Top/bottom padding clears the fixed TitleBar and BottomBar */
+    padding: 32px var(--spacing-xl) 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    overflow-y: hidden;
   }
 
   .content {
@@ -95,6 +82,5 @@
     flex-direction: column;
     align-items: center;
     gap: var(--spacing-md);
-    flex-shrink: 0;
   }
 </style>
